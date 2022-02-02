@@ -278,34 +278,34 @@ const homeworkResults = [
 // getEmail(): возвращает адрес электронной почты учащегося.
 // addHomeworkResult(тема, успех): этот метод можно вызвать с 2 аргументами: topic(string) и success(boolean). Этот метод должен добавить новый элемент в свойство homeworkResults учащегося.
 
-class Student {
-    #name;
-    #email;
-    #homeworkResults = [];
-    constructor(name, email) {
-        this.#name = name;
-        this.#email = email;
-    }
-    getName() {
-    return console.log(this.#name)
-    }
-    getEmail() {
-    return console.log(this.#email)
-    }
-    addHomeworkResult(topic, success) {
-        this.#homeworkResults.push({ topic, success })
-    }
-    getHomeworkResult() {
-        return console.log(this.#homeworkResults) 
-    }
-}
-const student = new Student('John', 'john@gmail.com') 
+// class Student {
+//     #name;
+//     #email;
+//     #homeworkResults = [];
+//     constructor(name, email) {
+//         this.#name = name;
+//         this.#email = email;
+//     }
+//     getName() {
+//     return console.log(this.#name)
+//     }
+//     getEmail() {
+//     return console.log(this.#email)
+//     }
+//     addHomeworkResult(topic, success) {
+//         this.#homeworkResults.push({ topic, success })
+//     }
+//     getHomeworkResult() {
+//         return console.log(this.#homeworkResults) 
+//     }
+// }
+// const student = new Student('John', 'john@gmail.com') 
 
-student.getName()
-student.getEmail()
-student.addHomeworkResult("HTML", true)
-student.addHomeworkResult("JS", true)
-student.getHomeworkResult()
+// student.getName()
+// student.getEmail()
+// student.addHomeworkResult("HTML", true)
+// student.addHomeworkResult("JS", true)
+// student.getHomeworkResult()
 
 // __________________Задача 2, 31/01/2022
 // 2. Необходимо создать конструктор функций 'FrontendLab' , который можно вызывать с двумя аргументами students и failedLimit.
@@ -315,4 +315,41 @@ student.getHomeworkResult()
 // addHomeworkResults(homeworkResults): этот метод можно вызвать с аргументом homeworkResult, объект с 2 полями: topic(string) и results(массив объектов с 2 полями: email(string) и success(boolean)). Этот метод должен обновить все объекты student в FrontendLab studentsList.
 // printStudentsEligibleForTest(): этот метод должен регистрировать в консоли список студентов, которые не провалили больше домашних заданий, чем разрешено failedLimit. 
 
+class FrontendLab{
+    #failedHomeworksLimit = 0;
+    #studentsList = [];
+    constructor(studentsList, failedHomeworksLimit) {
+        this.#studentsList = studentsList;
+        this.#failedHomeworksLimit = failedHomeworksLimit;
+        
+    }
+    addHomeworkResults(hwRes) {
+        const copyHwRes = [...hwRes.results]
+        const titlTems=hwRes.topic
+        this.#studentsList.forEach(obj => {
+            obj.homeWorkStudent=[]
+            copyHwRes.forEach(student => {
+                if (student.email === obj.email) {
+                    obj.homeWorkStudent.push({ topic:titlTems, success:student.success })
+                }
+        })
+        
+            console.log(obj.homeWorkStudent);
+            return obj.homeWorkStudent
+        })
+        }
 
+    printStudentsList() {
+        return this.#studentsList.forEach(({ name, email, homeWorkStudent }) => console.log((`name: ${name}, email: ${email}, ${homeWorkStudent}`)));
+        // return this.#studentsList.forEach(({ name, email }) => console.log((`name: ${name}, email: ${email}`)));
+    }
+    printStudentsEligibleForTest() {
+        
+    }
+
+}
+const lab = new FrontendLab(listOfStudents, 1);
+
+lab.addHomeworkResults(homeworkResults[0])
+lab.addHomeworkResults(homeworkResults[1])
+lab.printStudentsList()
