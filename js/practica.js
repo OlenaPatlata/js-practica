@@ -46,6 +46,8 @@ const divRootRef = document.querySelector('#root');
 // создаем два div
 const firstDivRef = document.createElement('div');
 const secondDivRef = document.createElement('div');
+
+
 // добавляем классы на созданные div
 firstDivRef.classList.add('first-div');
 secondDivRef.classList.add('second-div');
@@ -60,20 +62,35 @@ const linkBookList = document.querySelector('ul');
 
 
 
-function renderList() {
-    const markup = books.map(({ title}) => {
-        return `<li>
-            <p>${title}</p>
-            <button type="button">Edit</button>
-            <button type="button">Del</button>
+function renderList(books) {
+    const markup = books.map(({ title, id}) => {
+        return `<li id='${id}'>
+            <p class="title-book">${title}</p>
+            <button type="button" class="btn-edit">Edit</button>
+            <button type="button" class="btn-del">Del</button>
             </li > `
     }).join('');
-    bookListRef.insertAdjacentHTML("afterbegin", markup)
-   
+    bookListRef.insertAdjacentHTML("afterbegin", markup);
+    const btnEditRef = document.querySelectorAll(".btn-edit");
+    const btnDelRef = document.querySelectorAll('.btn-del');
+    btnEditRef.forEach(item => {
+        item.addEventListener('click', editBook);
+    });
+    btnDelRef.forEach(item => {
+        item.addEventListener('click', delBook);
+    });
+    const refP = document.querySelectorAll(".title-book");
+    refP.forEach(item => {
+        item.addEventListener('click', renderPreview)
+    });
+    
 }
-// renderList();
 
-function bookPreviewMarkup({ title,  author, img, plot  }) {
+
+
+renderList(books)
+
+function previewMarkup({ title,  author, img, plot  }) {
         return `<div>
             <h2>${title}</h2>
             <p>${author}</p>
@@ -105,8 +122,23 @@ function formMarkup({ title,  author, img, plot  }){
     </form>`
 }
 
+function renderPreview(event) {
+
+    const book= books.find(book => book.title === event.target.textContent);
+    const markup =  previewMarkup(book);
+    secondDivRef.innerHTML = '';
+    secondDivRef.insertAdjacentHTML('beforeend', markup)
+}
 
 
-console.log(renderList());
-console.log(bookPreviewMarkup(books[0]))
-console.log(formMarkup(books[0]));
+function editBook() {
+    console.log("edit");
+}
+function delBook(event) {
+    const idElem = event.target.parentNode.getAttribute("id")
+    const updaitBook = books.filter(book => idElem !== book.id)
+    bookListRef.innerHTML = '';
+    renderList(updaitBook);
+
+}
+
