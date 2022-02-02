@@ -327,21 +327,22 @@ class FrontendLab{
         const copyHwRes = [...hwRes.results]
         const titlTems=hwRes.topic
         this.#studentsList.forEach(obj => {
-            obj.homeWorkStudent=[]
+			obj.homeWorkStudent = []
+			console.log(obj.homeWorkStudent);
             copyHwRes.forEach(student => {
                 if (student.email === obj.email) {
-                    obj.homeWorkStudent.push({ topic:titlTems, success:student.success })
-                }
+				return obj.homeWorkStudent.push({ topic:titlTems, success:student.success })
+				}
         })
-        
-            console.log(obj.homeWorkStudent);
-            return obj.homeWorkStudent
-        })
-        }
+        return obj.homeWorkStudent
+		})
+	}
 
     printStudentsList() {
-        return this.#studentsList.forEach(({ name, email, homeWorkStudent }) => console.log((`name: ${name}, email: ${email}, ${homeWorkStudent}`)));
-        // return this.#studentsList.forEach(({ name, email }) => console.log((`name: ${name}, email: ${email}`)));
+		this.#studentsList.forEach(({ name, email, homeWorkStudent }) => {
+			console.log((`name: ${name}, email: ${email}`));
+			console.log(homeWorkStudent);
+		});
     }
     printStudentsEligibleForTest() {
         
