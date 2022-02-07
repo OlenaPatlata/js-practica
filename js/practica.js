@@ -1,46 +1,5 @@
-const books = [
-	{
-		id: '1',
-		title: `Apple. Эволюция компьютера`,
-		author: `Владимир Невзоров`,
-		img: `https://bukva.ua/img/products/449/449532_200.jpg`,
-		plot: `Богато иллюстрированный хронологический справочник по истории компьютеров, в котором увлекательно 
-    и в структурированном виде изложена информация о создании и развитии техники Apple на фоне истории 
-    персональных компьютеров в целом.
-    В книге даны описания десятков наиболее значимых моделей устройств как Apple, так и других производителей, 
-    сопровождающиеся большим количеством оригинальных студийных фотографий.
-    Книга предназначена для широкого круга читателей, интересующихся историей электроники. 
-    Она также может послужить источником вдохновения для дизайнеров, маркетологов и предпринимателей.`,
-	},
-	{
-		id: '2',
-		title: `Как объяснить ребенку информатику`,
-		author: `Кэрол Вордерман`,
-		img: `https://bukva.ua/img/products/480/480030_200.jpg`,
-		plot: `Иллюстрированная энциклопедия в формате инфографики о технических, социальных и культурных аспектах 
-    в информатике. Пошагово объясняет, как детям максимально эффективно использовать компьютеры и интернет-сервисы, 
-    оставаясь в безопасности. 
-    Книга рассказывает обо всем: от хранения данных до жизни в интернет-пространстве, 
-    от программирования до компьютерных атак. О том, как компьютеры функционируют, о современном программном 
-    обеспечении, устройстве Интернета и цифровом этикете. Все концепты - от хакера до биткоина - 
-    объясняются наглядно с помощью иллюстраций и схем.`,
-	},
-	{
-		id: '3',
-		title: `Путь скрам-мастера. #ScrumMasterWay`,
-		author: `Зузана Шохова`,
-		img: `https://bukva.ua/img/products/480/480090_200.jpg`,
-		plot: `Эта книга поможет вам стать выдающимся скрам-мастером и добиться отличных результатов с вашей командой. 
-    Она иллюстрированная и легкая для восприятия - вы сможете прочитать ее за выходные, а пользоваться полученными 
-    знаниями будете в течение всей карьеры.
-    Основываясь на 15-летнем опыте, Зузана Шохова рассказывает, какие роли и обязанности есть у скрам-мастера, 
-    как ему решать повседневные задачи, какие компетенции нужны, чтобы стать выдающимся скрам-мастером, 
-    какими инструментами ему нужно пользоваться.`,
-	},
-];
-
-
-
+import books from './books.js';
+console.log(books);
 
 const divRootRef = document.querySelector('#root');
 // создаем два div
@@ -61,6 +20,8 @@ firstDivRef.append(titleRef, bookListRef, addBtnRef);
 const linkBookList = document.querySelector('ul');
 
 
+
+addBtnRef.addEventListener('click', addBook);
 
 function renderList(books) {
     const markup = books.map(({ title, id}) => {
@@ -86,8 +47,6 @@ function renderList(books) {
     
 }
 
-
-
 renderList(books)
 
 function previewMarkup({ title,  author, img, plot  }) {
@@ -100,30 +59,30 @@ function previewMarkup({ title,  author, img, plot  }) {
 }
 
 
-function formMarkup({ title,  author, img, plot  }){
-    return `<form action="">
-    <label>
-    Title
-    <input type="text" name="title" value=${title}/>
-    </label>
-    <label>
-    Author
-        <input type="text" name="author" value=${author} />
-    </label>
-    <label>
-    Image URL
-        <input type="text" name="img" value=${img}/>
-    </label>
-    <label>
-    Plot
-        <input type="text" name="plot" value=${plot}/>
-    </label>
-    <button type="button">Save</button>
-    </form>`
+function formMarkup({ title, author, img, plot }) {
+    return ` <form action="" class="add-form">
+        <label>
+            Title
+                <input type="text" name="title" value="${title}" />
+            </label>
+            <label>
+            Author
+                <input type="text" name="author" value="${author}"/>
+            </label>
+            <label>
+            Image URL
+                <input type="text" name="img" value="${img}"/>
+            </label>
+            <label>
+            Plot
+                <input type="text" name="plot" value="${plot}"/>
+            </label>
+            <button type="button" class="form-btn" >Save</button>
+            </form>`;
 }
 
-function renderPreview(event) {
 
+function renderPreview(event) {
     const book= books.find(book => book.title === event.target.textContent);
     const markup =  previewMarkup(book);
     secondDivRef.innerHTML = '';
@@ -134,11 +93,39 @@ function renderPreview(event) {
 function editBook() {
     console.log("edit");
 }
+
 function delBook(event) {
     const idElem = event.target.parentNode.getAttribute("id")
     const updaitBook = books.filter(book => idElem !== book.id)
     bookListRef.innerHTML = '';
     renderList(updaitBook);
+}
 
+function addBook(event) {
+
+    const newBook = { id: Date.now(), title: '', author: '', img: '', plot: '' };
+    
+    const markup = formMarkup(newBook);
+    secondDivRef.innerHTML = '';
+    secondDivRef.insertAdjacentHTML('afterbegin', markup);
+    onTextInput(newBook);
+
+    const btnInputRef = document.querySelector('.form-btn');
+    btnInputRef.addEventListener('click', onSaveData);
+    
+    function onSaveData() {
+        if (newBook.title === '' || newBook.author === '' || newBook.img === '' || newBook.plot === '') {
+            alert("Все поля заполни!");
+        } else {
+            const markup = previewMarkup(newBook);
+            secondDivRef.innerHTML = '';
+            secondDivRef.insertAdjacentHTML('beforeend', markup);
+        }
+    }
+    function onTextInput(book) {
+    const inputAllRef = document.querySelectorAll('input');
+    const onChange = event => { book[event.target.name] = event.target.value };
+        inputAllRef.forEach(input => input.addEventListener('change', onChange));
+    }
 }
 
