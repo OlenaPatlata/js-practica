@@ -1,29 +1,44 @@
 import books from './books.js';
-console.log(books);
+// Вводим константу для названия ключа из локального хранилища
+const BOOKS = "book";
 
+// Сохраняем в локальном хранилище обект books, предварительно превратив его в строку 
+localStorage.setItem(BOOKS, JSON.stringify(books));
+
+// Получаем ссылку на основной div
 const divRootRef = document.querySelector('#root');
-// создаем два div
+
+// Cоздаем два div
 const firstDivRef = document.createElement('div');
 const secondDivRef = document.createElement('div');
 
 
-// добавляем классы на созданные div
+// Lобавляем классы на созданные div
 firstDivRef.classList.add('first-div');
 secondDivRef.classList.add('second-div');
-document.querySelector('#root').append(firstDivRef, secondDivRef);
+
+// Добавляем после основного дива два новосозданных элемента
+divRootRef.append(firstDivRef, secondDivRef);
+
+// Создаём три элемента разметки, добавляем текстовый контент, добавляем их в первый div
 const titleRef = document.createElement('h1');
 const bookListRef = document.createElement('ul');
 const addBtnRef = document.createElement('button');
 titleRef.textContent = 'Library';
 addBtnRef.textContent = 'Add';
 firstDivRef.append(titleRef, bookListRef, addBtnRef);
+
+// Получаем ссылку на ul
 const linkBookList = document.querySelector('ul');
 
-
-
+// Вешаем слушателя на кнопку ADD и колбек: вызов функции addBook
 addBtnRef.addEventListener('click', addBook);
 
-function renderList(books) {
+// Функция renderList
+function renderList() {
+    // Парсим из локального хранилища массив объектов
+    const books = JSON.parse(localStorage.getItem(BOOKS));
+    // В переменную markup записываем результат выполнения метода map() - строку
     const markup = books.map(({ title, id}) => {
         return `<li id='${id}'>
             <p class="title-book">${title}</p>
@@ -31,26 +46,34 @@ function renderList(books) {
             <button type="button" class="btn-del">Del</button>
             </li > `
     }).join('');
+    // В элемент ul вставляем новосозданную разметку
     bookListRef.insertAdjacentHTML("afterbegin", markup);
+    // Получаем ссылки на все кнопки edit
     const btnEditRef = document.querySelectorAll(".btn-edit");
+    // Получаем ссылки на все кнопки del
     const btnDelRef = document.querySelectorAll('.btn-del');
+    // Методом forEach перебираем все кнопки edit, вешаем слушателей и колбек функцию editBook
     btnEditRef.forEach(item => {
         item.addEventListener('click', editBook);
     });
+    // Методом forEach перебираем все кнопки del, вешаем слушателей и колбек функцию delBook
     btnDelRef.forEach(item => {
         item.addEventListener('click', delBook);
     });
+    // Получаем ссылки на все абзацы <p> с заголовками книг
     const refP = document.querySelectorAll(".title-book");
+    // Методом forEach перебираем все кнопки абзацы <p>, вешаем слушателей и колбек функцию renderPreview
     refP.forEach(item => {
         item.addEventListener('click', renderPreview)
     });
-    
 }
 
-renderList(books)
+// Вызываем функцию renderList()
+renderList();
 
-function previewMarkup({ title,  author, img, plot  }) {
-        return `<div>
+// Создаём функцию previewMarkup, которая создаёт разметку для превью выбранной пользователем книги
+function previewMarkup({ title,  author, img, plot, id  }) {
+        return `<div id="${id}" class="wrapper">
             <h2>${title}</h2>
             <p>${author}</p>
             <img src='${img}' alt='Титульная страница книги' width="250px">
@@ -58,7 +81,7 @@ function previewMarkup({ title,  author, img, plot  }) {
             </div > `
 }
 
-
+// Создаём функцию formMarkup, кторая рендерит разметку для формы
 function formMarkup({ title, author, img, plot }) {
     return ` <form action="" class="add-form">
         <label>
@@ -81,29 +104,74 @@ function formMarkup({ title, author, img, plot }) {
             </form>`;
 }
 
-
+// Создаём функцию renderPreview, которая
 function renderPreview(event) {
+    const books = JSON.parse(localStorage.getItem(BOOKS));
     const book= books.find(book => book.title === event.target.textContent);
     const markup =  previewMarkup(book);
     secondDivRef.innerHTML = '';
     secondDivRef.insertAdjacentHTML('beforeend', markup)
 }
 
+// Создаём функцию onTextInput, которая
+function onTextInput(book) {
+    // Получаем ссылки на все input
+    const inputAllRef = document.querySelectorAll('input');
 
-function editBook() {
-    console.log("edit");
+    const onChange = event => { book[event.target.name] = event.target.value };
+    // Перебираем в цикле каждый input и вешаем на него слушателя
+    inputAllRef.forEach(input => input.addEventListener('change', onChange));
+}
+
+function editBook(event) {
+    const books = JSON.parse(localStorage.getItem(BOOKS));
+    const idElem = event.target.parentNode.getAttribute("id");
+    const bookToEdit = books.find(book => book.id === idElem);
+    const markup = formMarkup(bookToEdit);
+    secondDivRef.innerHTML = '';
+    secondDivRef.insertAdjacentHTML('afterbegin', markup);
+    onTextInput(bookToEdit);
+
+    const saveBtn = document.querySelector(".save-btn");
+    saveBtn.addEventListener("click", onSaveData);
+    function onSaveData() {
+        if (newBook.title === '' || newBook.author === '' || newBook.img === '' || newBook.plot === '') {
+            alert("Все поля заполни!");
+        } else {
+            const markup = previewMarkup(newBook);
+            secondDivRef.innerHTML = '';
+            secondDivRef.insertAdjacentHTML('beforeend', markup);
+            const books = JSON.parse(localStorage.getItem(BOOKS)); 
+            const updateBook = books.map(book => book,id ===idElem? bookToEdit:book)
+            localStorage.setItem(BOOKS, JSON.stringify(books));
+            bookListRef.innerHTML = '';
+            renderList();
+        }
+    }
+    
 }
 
 function delBook(event) {
-    const idElem = event.target.parentNode.getAttribute("id")
-    const updaitBook = books.filter(book => idElem !== book.id)
+    const idElem = event.target.parentNode.getAttribute("id");
+    const books = JSON.parse(localStorage.getItem(BOOKS));
+    const updaitBook = books.filter(book => idElem !== book.id);
+    // отфильтрованный массив записали заново в локальное хранилище
+    localStorage.setItem(BOOKS, JSON.stringify(updaitBook));
+    // очищаем разметку
     bookListRef.innerHTML = '';
-    renderList(updaitBook);
+    // очищаем превью и вызываем метод renderList() 
+    renderList();
+    const wrapper = document.querySelector(".wrapper")
+    if (wrapper) {
+        if(wrapper.id===idElem){
+        secondDivRef.innerHTML = '';
+        }
+    }
 }
 
+// Создаём функцию addBook, которая
 function addBook(event) {
-
-    const newBook = { id: Date.now(), title: '', author: '', img: '', plot: '' };
+    const newBook = { id: `${Date.now()}`, title: '', author: '', img: '', plot: '' };
     
     const markup = formMarkup(newBook);
     secondDivRef.innerHTML = '';
@@ -120,12 +188,13 @@ function addBook(event) {
             const markup = previewMarkup(newBook);
             secondDivRef.innerHTML = '';
             secondDivRef.insertAdjacentHTML('beforeend', markup);
+            const books = JSON.parse(localStorage.getItem(BOOKS)); 
+            books.push(newBook);
+            localStorage.setItem(BOOKS, JSON.stringify(books));
+            bookListRef.innerHTML = '';
+            renderList();
         }
     }
-    function onTextInput(book) {
-    const inputAllRef = document.querySelectorAll('input');
-    const onChange = event => { book[event.target.name] = event.target.value };
-        inputAllRef.forEach(input => input.addEventListener('change', onChange));
-    }
+
 }
 
