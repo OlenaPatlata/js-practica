@@ -81,7 +81,7 @@ function previewMarkup({ title,  author, img, plot, id  }) {
             </div > `
 }
 
-// Создаём функцию formMarkup, кторая рендерит разметку для формы
+// Создаём функцию formMarkup, кторая создаёт разметку для формы
 function formMarkup({ title, author, img, plot }) {
     return ` <form action="" class="add-form">
         <label>
@@ -100,27 +100,17 @@ function formMarkup({ title, author, img, plot }) {
             Plot
                 <input type="text" name="plot" value="${plot}"/>
             </label>
-            <button type="button" class="form-btn" >Save</button>
+            <button type="button" class="save-btn" >Save</button>
             </form>`;
 }
 
-// Создаём функцию renderPreview, которая
+// Создаём функцию renderPreview, которая рендерит разметку превью во втором диве
 function renderPreview(event) {
     const books = JSON.parse(localStorage.getItem(BOOKS));
     const book= books.find(book => book.title === event.target.textContent);
     const markup =  previewMarkup(book);
     secondDivRef.innerHTML = '';
     secondDivRef.insertAdjacentHTML('beforeend', markup)
-}
-
-// Создаём функцию onTextInput, которая
-function onTextInput(book) {
-    // Получаем ссылки на все input
-    const inputAllRef = document.querySelectorAll('input');
-
-    const onChange = event => { book[event.target.name] = event.target.value };
-    // Перебираем в цикле каждый input и вешаем на него слушателя
-    inputAllRef.forEach(input => input.addEventListener('change', onChange));
 }
 
 function editBook(event) {
@@ -130,19 +120,21 @@ function editBook(event) {
     const markup = formMarkup(bookToEdit);
     secondDivRef.innerHTML = '';
     secondDivRef.insertAdjacentHTML('afterbegin', markup);
-    onTextInput(bookToEdit);
+    saveInputData(bookToEdit);
 
     const saveBtn = document.querySelector(".save-btn");
     saveBtn.addEventListener("click", onSaveData);
+
     function onSaveData() {
-        if (newBook.title === '' || newBook.author === '' || newBook.img === '' || newBook.plot === '') {
-            alert("Все поля заполни!");
+        if (bookToEdit.title === '' || bookToEdit.author === '' || bookToEdit.img === '' || bookToEdit.plot === '') {
+            alert("Please fill in all the fields");
         } else {
-            const markup = previewMarkup(newBook);
+            const markup = previewMarkup(bookToEdit);
             secondDivRef.innerHTML = '';
-            secondDivRef.insertAdjacentHTML('beforeend', markup);
-            const books = JSON.parse(localStorage.getItem(BOOKS)); 
-            const updateBook = books.map(book => book,id ===idElem? bookToEdit:book)
+            secondDivRef.insertAdjacentHTML('afterbegin', markup);
+
+            const index = books.indexOf(bookToEdit);
+            books[index] = bookToEdit;
             localStorage.setItem(BOOKS, JSON.stringify(books));
             bookListRef.innerHTML = '';
             renderList();
@@ -176,18 +168,18 @@ function addBook(event) {
     const markup = formMarkup(newBook);
     secondDivRef.innerHTML = '';
     secondDivRef.insertAdjacentHTML('afterbegin', markup);
-    onTextInput(newBook);
+    saveInputData(newBook);
 
-    const btnInputRef = document.querySelector('.form-btn');
-    btnInputRef.addEventListener('click', onSaveData);
+    const saveBtn = document.querySelector('.save-btn');
+    saveBtn.addEventListener('click', onSaveData);
     
     function onSaveData() {
         if (newBook.title === '' || newBook.author === '' || newBook.img === '' || newBook.plot === '') {
-            alert("Все поля заполни!");
+            alert("Please fill in all the fields!");
         } else {
             const markup = previewMarkup(newBook);
             secondDivRef.innerHTML = '';
-            secondDivRef.insertAdjacentHTML('beforeend', markup);
+            secondDivRef.insertAdjacentHTML('afterbegin', markup);
             const books = JSON.parse(localStorage.getItem(BOOKS)); 
             books.push(newBook);
             localStorage.setItem(BOOKS, JSON.stringify(books));
@@ -198,3 +190,12 @@ function addBook(event) {
 
 }
 
+// Создаём функцию onTextInput, которая
+function   saveInputData(book) {
+    // Получаем ссылки на все input
+    const inputAllRef = document.querySelectorAll('input');
+
+    const onChange = event => { book[event.target.name] = event.target.value };
+    // Перебираем в цикле каждый input и вешаем на него слушателя
+    inputAllRef.forEach(input => input.addEventListener('change', onChange));
+}
