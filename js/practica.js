@@ -101,6 +101,7 @@ function formMarkup({ title, author, img, plot }) {
                 <input type="text" name="plot" value="${plot}"/>
             </label>
             <button type="button" class="save-btn" >Save</button>
+            <button type="button" class="cansel-btn" >Cansel</button>
             </form>`;
 }
 
@@ -140,7 +141,13 @@ function editBook(event) {
             renderList();
         }
     }
-    
+// Блок для 
+    const canselBtn = document.querySelector(".cansel-btn");
+    canselBtn.addEventListener("click", onCansel);
+        function onCansel() {
+        secondDivRef.innerHTML = '';
+    }
+
 }
 
 function delBook(event) {
