@@ -9,3 +9,46 @@
   width: 60%;
   background-color: paleturquoise;
 }
+
+.events {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 300px);
+  list-style: none;
+  gap: 1rem;
+}
+.controls {
+  margin: 1rem auto;
+  display: flex;
+  justify-content: center;
+}
+.link-list {
+  display: flex;
+  gap: 1rem;
+}
+.link {
+  display: block;
+}
+
+/* ul {
+  list-style: none;
+  padding-left: 0;
+}
+.events {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, 300px);
+}
+.controls {
+  margin: 1rem auto;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.link-list {
+  display: flex;
+  gap: 1rem;
+}
+.link {
+  display: block;
+  padding: 1rem;
+} */
