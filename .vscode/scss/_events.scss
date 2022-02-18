@@ -26,9 +26,9 @@ a {
   border-radius: 10px;
   overflow: hidden;
   transition: transform 250ms linear;
-}
-.events__link:hover {
-  transform: scale(1.05);
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 .controls {
   margin: 1rem auto;
